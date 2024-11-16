@@ -1,13 +1,15 @@
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const path = require("path");
 
+const cloudinary = require("../../clouddinary");
+
 // Định nghĩa cấu hình lưu trữ
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Thư mục lưu trữ
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Tên tệp
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "ratings", // Thư mục trên Cloudinary để lưu ảnh (có thể thay đổi)
+    allowed_formats: ["jpg", "png", "jpeg"],
   },
 });
 
