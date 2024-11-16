@@ -20,7 +20,16 @@ app.use(express.urlencoded({ extended: true })); // for form data
 
 // Cấu hình CORS để chấp nhận các request từ frontend
 app.use(cors());
-
+const corsOptions = {
+  origin: [
+    "http://localhost:5173/",
+    "https://cnpmncbe-46ny2dnqp-ngocs-projects-c569bb48.vercel.app/",
+  ], // Địa chỉ frontend
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Bao gồm cả phương thức OPTIONS
+  allowedHeaders: ["Content-Type", "Authorization"], // Header được phép
+  credentials: true, // Cho phép cookie hoặc thông tin xác thực
+};
+app.options("*", cors(corsOptions));
 //config template engine
 configViewEngine(app);
 
