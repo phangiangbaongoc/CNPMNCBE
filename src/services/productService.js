@@ -1,39 +1,52 @@
 const Product = require("../models/product");
-
-const createProduct = (newProduct) => {
-  return new Promise(async (resolve, reject) => {
-    const {
+const createProductService = async (
+  Food_name,
+  Price,
+  Food_picture,
+  categoryID, // Newly added field
+  Food_status
+) => {
+  try {
+    let result = await Product.create({
       Food_name,
       Price,
       Food_picture,
       categoryID, // Newly added field
-      Food_status, // Newly added field, optional since it defaults to 'Hết'
-    } = newProduct;
+      Food_status,
+    });
+    return result;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
 
-    try {
-      // Create a new product
-      const createdProduct = await Product.create({
-        Food_name,
-        Price,
-        Food_picture,
-        categoryID, // Save the category ID
-        Food_status, // Save the food status (optional)
-      });
+const getProductService = async () => {
+  try {
+    const product = await Product.aggregate([
+      {
+        $project: {
+          Food_name: 1,
+          Price: 1,
+          Food_detail: 1,
+          Food_picture: 1,
+          Store_id: 1,
+        },
+      },
+    ]);
 
-      if (createdProduct) {
-        return resolve({
-          status: "OK",
-          message: "SUCCESS",
-          data: createdProduct,
-        });
-      }
-    } catch (e) {
-      return reject({
-        status: "ERR",
-        message: e.message,
-      });
+    if (!product || product.length === 0) {
+      throw new Error("No product found");
     }
-  });
+
+    return {
+      status: "OK",
+      message: "SUCCESS",
+      data: product,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error retrieving product");
+  }
 };
 
 const updateProduct = (productId, updatedFields) => {
@@ -125,40 +138,40 @@ const updateProduct = (productId, updatedFields) => {
 //   });
 // };
 
-const getAllProduct = async () => {
-  try {
-    const products = await Product.aggregate([
-      {
-        $lookup: {
-          from: "categories",
-          localField: "categoryID",
-          foreignField: "_id",
-          as: "categoryInfo",
-        },
-      },
-      {
-        $project: {
-          Food_name: 1,
-          Price: 1,
-          Food_picture: 1,
-          categoryName: { $arrayElemAt: ["$categoryInfo.categoryName", 0] },
-        },
-      },
-    ]);
+// const getAllProduct = async () => {
+//   try {
+//     const products = await Product.aggregate([
+//       {
+//         $lookup: {
+//           from: "categories",
+//           localField: "categoryID",
+//           foreignField: "_id",
+//           as: "categoryInfo",
+//         },
+//       },
+//       {
+//         $project: {
+//           Food_name: 1,
+//           Price: 1,
+//           Food_picture: 1,
+//           categoryName: { $arrayElemAt: ["$categoryInfo.categoryName", 0] },
+//         },
+//       },
+//     ]);
 
-    if (!products || products.length === 0) {
-      throw new Error("No products found");
-    }
+//     if (!products || products.length === 0) {
+//       throw new Error("No products found");
+//     }
 
-    return {
-      status: "OK",
-      message: "SUCCESS",
-      data: products,
-    };
-  } catch (error) {
-    throw new Error(error.message || "Error retrieving products");
-  }
-};
+//     return {
+//       status: "OK",
+//       message: "SUCCESS",
+//       data: products,
+//     };
+//   } catch (error) {
+//     throw new Error(error.message || "Error retrieving products");
+//   }
+// };
 
 const deleteProduct = (productId) => {
   return new Promise(async (resolve, reject) => {
@@ -184,8 +197,8 @@ const deleteProduct = (productId) => {
   });
 };
 module.exports = {
-  createProduct,
+  createProductService,
   updateProduct,
-  getAllProduct,
+  getProductService,
   deleteProduct,
 };

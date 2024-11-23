@@ -6,7 +6,6 @@ const createStaffService = async (
   Staff_phone,
   Staff_email,
   Staff_address,
-  Staff_date,
   Staff_status,
   Staff_image
 ) => {
@@ -18,7 +17,6 @@ const createStaffService = async (
       Staff_phone: Staff_phone,
       Staff_email: Staff_email,
       Staff_address: Staff_address,
-      Staff_date: Staff_date,
       Staff_status: Staff_status,
       Staff_image: Staff_image,
     });
@@ -59,7 +57,6 @@ const getStaffService = async () => {
           Staff_phone: 1,
           Staff_email: 1,
           Staff_address: 1,
-          Staff_date: 1,
           Staff_status: 1,
           Staff_image: 1,
         },

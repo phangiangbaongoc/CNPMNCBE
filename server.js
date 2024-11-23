@@ -9,6 +9,7 @@ const categoryRouter = require("./src/routes/categoryRouter");
 const warehouseRouter = require("./src/routes/warehouseRouter");
 const staffRouter = require("./src/routes/staffRouter");
 const paymentRouter = require("./src/routes/paymentRouter");
+const orderRouter = require("./src/routes/orderRouter");
 const connection = require("./src/config/database");
 const { getHomepage } = require("./src/controllers/homeController");
 
@@ -17,7 +18,7 @@ const port = process.env.PORT || 8888;
 
 //config req.body cấu hình req.body lấy dữ liệu từ data
 app.use(express.json()); // for json
-app.use(express.urlencoded({ extended: true })); // for form data
+// app.use(express.urlencoded({ extended: true })); // for form data
 
 // Cấu hình CORS để chấp nhận các request từ frontend
 app.use(cors());
@@ -30,13 +31,13 @@ app.use(cors());
 //   allowedHeaders: ["Content-Type", "Authorization"], // Header được phép
 //   credentials: true, // Cho phép cookie hoặc thông tin xác thực
 // };
-const corsOptions = {
-  origin: "*", // Chấp nhận mọi request (dùng tạm để debug)
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: "*", // Chấp nhận mọi request (dùng tạm để debug)
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true,
+// };
+// app.use(cors(corsOptions));
 
 // app.options("*", cors(corsOptions));
 //config template engine
@@ -51,7 +52,9 @@ app.use("/v1/product", productRouter);
 app.use("/v1/category", categoryRouter);
 app.use("/v1/warehouse", warehouseRouter);
 app.use("/v1/staff", staffRouter);
-app.use("/api", paymentRouter);
+app.use("/v1/payment", paymentRouter);
+app.use("/v1/cart", categoryRouter);
+app.use("/v1/order", orderRouter);
 (async () => {
   try {
     await connection(); // Kết nối tới database

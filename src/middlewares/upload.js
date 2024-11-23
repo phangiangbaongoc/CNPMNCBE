@@ -13,6 +13,15 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage: storage });
-
+// const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      cb(new Error("Only image files are allowed!"));
+    } else {
+      cb(null, true);
+    }
+  },
+}).single("Food_picture"); // Nếu upload file đơn
 module.exports = upload;
