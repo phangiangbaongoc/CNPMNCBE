@@ -149,78 +149,11 @@ const getProduct = async (req, res) => {
   const data = await ProductService.getProductService();
   return res.status(200).json(data); // data been server trả về gì thì trả về nguyên cho frontend
 };
-const updateProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    // Validate product ID
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        status: "ERR",
-        message: "Invalid product ID",
-      });
-    }
-
-    // Lấy dữ liệu cập nhật từ req.body và ảnh từ req.file
-    const updatedFields = { ...req.body };
-    if (req.file) {
-      updatedFields.Food_picture = req.file.path; // Thêm ảnh nếu có upload mới
-    }
-
-    // Call service to update product
-    const result = await ProductService.updateProduct(id, updatedFields);
-
-    if (result.status === "ERR") {
-      return res.status(404).json(result); // Product not found
-    }
-
-    return res.status(200).json(result); // Success
-  } catch (e) {
-    return res.status(500).json({
-      status: "ERR",
-      message: e.message,
-    });
-  }
-};
-
-//   try {
-//     const result = await ProductService.getAllProduct();
-//     return res.status(200).json(result);
-//   } catch (e) {
-//     return res.status(500).json({
-//       status: "ERR",
-//       message: e.message,
-//     });
-//   }
-// };
-// const getAllProduct = async (req, res) => {
-//   try {
-//     const products = await Product.find(); // Truy vấn tất cả sản phẩm
-//     res.status(200).json(products); // Đảm bảo trả về đúng dữ liệu
-//   } catch (error) {
-//     res.status(500).json({ message: "Error retrieving products", error });
-//   }
-// };
-// const getAllProduct = async (req, res) => {
-//   try {
-//     const page = parseInt(req.query.page) || 1; // Default page = 1
-//     const limit = parseInt(req.query.limit) || 10; // Default limit = 10
-
-//     const result = await ProductService.getAllProduct(page, limit);
-//     return res.status(200).json(result);
-//   } catch (e) {
-//     return res.status(500).json({
-//       status: "ERR",
-//       message: e.message,
-//     });
-//   }
-// };
-
-// const deleteProduct = async (req, res) => {
+// const getProductById = async (req, res) => {
 //   try {
 //     const { id } = req.params;
 
-//     // Validate product ID format
+//     // Validate product ID
 //     if (!mongoose.Types.ObjectId.isValid(id)) {
 //       return res.status(400).json({
 //         status: "ERR",
@@ -228,20 +161,127 @@ const updateProduct = async (req, res) => {
 //       });
 //     }
 
-//     const result = await ProductService.deleteProduct(id);
+//     const product = await ProductService.getProductById(id);
 
-//     if (result.status === "ERR") {
-//       return res.status(404).json(result); // Return 404 if product not found
+//     if (!product) {
+//       return res.status(404).json({
+//         status: "ERR",
+//         message: "Product not found",
+//       });
 //     }
 
-//     return res.status(200).json(result);
-//   } catch (e) {
+//     return res.status(200).json({
+//       status: "OK",
+//       data: product,
+//     });
+//   } catch (error) {
 //     return res.status(500).json({
 //       status: "ERR",
-//       message: e.message,
+//       message: error.message,
 //     });
 //   }
 // };
+// Lấy thông tin sản phẩm cụ thể qua ID
+const getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Kiểm tra ID có hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Invalid product ID",
+      });
+    }
+
+    const result = await ProductService.getProductById(id);
+
+    if (result.status === "ERR") {
+      return res.status(404).json(result); // Sản phẩm không tìm thấy
+    }
+
+    return res.status(200).json(result); // Trả về thông tin sản phẩm
+  } catch (error) {
+    return res.status(500).json({
+      status: "ERR",
+      message: error.message,
+    });
+  }
+};
+// const updateProduct = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const updateData = req.body;
+
+//     // Validate product ID
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       return res.status(400).json({
+//         status: "ERR",
+//         message: "Invalid product ID",
+//       });
+//     }
+
+//     // Validate input data (có thể thêm kiểm tra cụ thể)
+//     if (!updateData || Object.keys(updateData).length === 0) {
+//       return res.status(400).json({
+//         status: "ERR",
+//         message: "No data provided for update",
+//       });
+//     }
+
+//     const updatedProduct = await ProductService.updateProduct(id, updateData);
+
+//     if (!updatedProduct) {
+//       return res.status(404).json({
+//         status: "ERR",
+//         message: "Product not found",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       status: "OK",
+//       message: "Product updated successfully",
+//       data: updatedProduct,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       status: "ERR",
+//       message: error.message,
+//     });
+//   }
+// };
+// Cập nhật thông tin sản phẩm qua ID
+const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Kiểm tra ID có hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Invalid product ID",
+      });
+    }
+
+    const updatedFields = { ...req.body }; // Lấy thông tin cần cập nhật từ body
+    if (req.file) {
+      updatedFields.Food_picture = req.file.path; // Nếu có ảnh mới, cập nhật
+    }
+
+    const result = await ProductService.updateProduct(id, updatedFields);
+
+    if (result.status === "ERR") {
+      return res.status(404).json(result); // Sản phẩm không tìm thấy
+    }
+
+    return res.status(200).json(result); // Trả về thông tin sản phẩm sau khi cập nhật
+  } catch (error) {
+    return res.status(500).json({
+      status: "ERR",
+      message: error.message,
+    });
+  }
+};
 const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -261,10 +301,11 @@ const deleteProduct = async (req, res) => {
       return res.status(404).json(result); // Product not found
     }
 
+    // Trả về phản hồi gọn hơn
     return res.status(200).json({
       status: "OK",
       message: "Product deleted successfully",
-      data: result,
+      data: result.data, // Trả về thông tin sản phẩm đã xóa
     });
   } catch (e) {
     return res.status(500).json({
@@ -276,7 +317,8 @@ const deleteProduct = async (req, res) => {
 
 module.exports = {
   createProduct,
-  updateProduct,
   getProduct,
+  getProductById,
+  updateProduct,
   deleteProduct,
 };

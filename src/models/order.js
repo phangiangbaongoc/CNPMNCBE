@@ -125,8 +125,8 @@ const mongoose = require("mongoose");
 const itemSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
     ref: "Product", // Refers to Product collection
+    required: true,
   },
   quantity: {
     type: Number,

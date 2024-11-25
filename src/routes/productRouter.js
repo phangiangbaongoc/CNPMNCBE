@@ -6,13 +6,19 @@ const {
   updateProduct,
   deleteProduct,
   getProduct,
+  getProductById,
 } = require("../controllers/productController");
 const routerAPI = express.Router();
 
 // Định nghĩa route cho sản phẩm
 routerAPI.post("/create_product", createProduct);
-routerAPI.put("/update_product/:id", updateProduct);
 routerAPI.get("/list_product", getProduct);
+routerAPI.get("/detail_product/:id", getProductById);
+routerAPI.put(
+  "/update_product/:id",
+  // upload.single("Food_picture"),
+  updateProduct
+);
 routerAPI.delete("/delete_product/:id", deleteProduct);
 // Thêm route xóa sản phẩm
 

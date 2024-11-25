@@ -48,157 +48,96 @@ const getProductService = async () => {
     throw new Error(error.message || "Error retrieving product");
   }
 };
-
-const updateProduct = (productId, updatedFields) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Check if the product exists
-      const product = await Product.findById(productId);
-      if (!product) {
-        return resolve({
-          status: "ERR",
-          message: "Product not found",
-        });
-      }
-
-      // Update product fields
-      Object.keys(updatedFields).forEach((key) => {
-        product[key] = updatedFields[key];
-      });
-
-      const updatedProduct = await product.save();
-
-      if (updatedProduct) {
-        return resolve({
-          status: "OK",
-          message: "SUCCESS",
-          data: updatedProduct,
-        });
-      }
-    } catch (e) {
-      return reject({
-        status: "ERR",
-        message: e.message,
-      });
-    }
-  });
-};
-
-// const getAllProduct =  () => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       const products = await Product.aggregate([
-//         {
-//           $lookup: {
-//             from: "stores",
-//             localField: "Store_id", // Kiểm tra tên trường
-//             foreignField: "_id",
-//             as: "storeInfo",
-//           },
-//         },
-//         {
-//           $lookup: {
-//             from: "categories",
-//             localField: "categoryID", // Kiểm tra tên trường
-//             foreignField: "_id",
-//             as: "categoryInfo",
-//           },
-//         },
-//         {
-//           $project: {
-//             Food_name: 1,
-//             Price: 1,
-//             Food_detail: 1,
-//             Food_picture: 1,
-//             Store_id: 1,
-//             storeName: { $arrayElemAt: ["$storeInfo.storeName", 0] }, // Lấy tên cửa hàng
-//             categoryName: { $arrayElemAt: ["$categoryInfo.categoryName", 0] }, // Lấy tên danh mục
-//           },
-//         },
-//       ]);
-
-//       if (products && products.length > 0) {
-//         return resolve({
-//           status: "OK",
-//           message: "SUCCESS",
-//           data: products,
-//         });
-//       } else {
-//         return reject({
-//           status: "ERR",
-//           message: "No products found",
-//         });
-//       }
-//     } catch (e) {
-//       return reject({
-//         status: "ERR",
-//         message: e.message,
-//       });
-//     }
-//   });
-// };
-
-// const getAllProduct = async () => {
+// const getProductById = async (id) => {
 //   try {
-//     const products = await Product.aggregate([
-//       {
-//         $lookup: {
-//           from: "categories",
-//           localField: "categoryID",
-//           foreignField: "_id",
-//           as: "categoryInfo",
-//         },
-//       },
-//       {
-//         $project: {
-//           Food_name: 1,
-//           Price: 1,
-//           Food_picture: 1,
-//           categoryName: { $arrayElemAt: ["$categoryInfo.categoryName", 0] },
-//         },
-//       },
-//     ]);
-
-//     if (!products || products.length === 0) {
-//       throw new Error("No products found");
-//     }
-
-//     return {
-//       status: "OK",
-//       message: "SUCCESS",
-//       data: products,
-//     };
+//     const product = await Product.findById(id);
+//     return product; // Trả về null nếu không tìm thấy
 //   } catch (error) {
-//     throw new Error(error.message || "Error retrieving products");
+//     throw new Error(error.message || "Error fetching product");
 //   }
 // };
-
-const deleteProduct = (productId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const product = await Product.findByIdAndDelete(productId);
-      if (!product) {
-        return resolve({
-          status: "ERR",
-          message: "Product not found",
-        });
-      }
-
-      return resolve({
-        status: "OK",
-        message: "Product deleted successfully",
-      });
-    } catch (e) {
-      return reject({
+const getProductById = async (productId) => {
+  try {
+    const product = await Product.findById(productId).populate("categoryID"); // Populate để lấy thông tin chi tiết category nếu cần
+    if (!product) {
+      return {
         status: "ERR",
-        message: e.message,
-      });
+        message: "Product not found",
+      };
     }
-  });
+    return {
+      status: "OK",
+      message: "Product found successfully",
+      data: product,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error fetching product");
+  }
 };
+// const updateProduct = async (id, updateData) => {
+//   try {
+//     // Tùy chọn `new: true` để trả về dữ liệu sau khi cập nhật
+//     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+//       new: true,
+//       runValidators: true,
+//     });
+
+//     return updatedProduct; // Trả về null nếu không tìm thấy
+//   } catch (error) {
+//     throw new Error(error.message || "Error updating product");
+//   }
+// };
+const updateProduct = async (productId, updatedFields) => {
+  try {
+    const product = await Product.findById(productId);
+    if (!product) {
+      return {
+        status: "ERR",
+        message: "Product not found",
+      };
+    }
+
+    // Cập nhật thông tin sản phẩm
+    Object.keys(updatedFields).forEach((key) => {
+      product[key] = updatedFields[key];
+    });
+
+    const updatedProduct = await product.save();
+
+    return {
+      status: "OK",
+      message: "Product updated successfully",
+      data: updatedProduct,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error updating product");
+  }
+};
+const deleteProduct = async (productId) => {
+  try {
+    const product = await Product.findByIdAndDelete(productId);
+    if (!product) {
+      return {
+        status: "ERR",
+        message: "Product not found",
+      };
+    }
+
+    // Trả về thông tin của sản phẩm đã xóa
+    return {
+      status: "OK",
+      message: "Product deleted successfully",
+      data: product,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error deleting product");
+  }
+};
+
 module.exports = {
   createProductService,
-  updateProduct,
   getProductService,
+  getProductById,
+  updateProduct,
   deleteProduct,
 };

@@ -38,6 +38,7 @@ const orderService = require("../services/orderService");
 
 const createOrder = async (req, res) => {
   try {
+    console.log("Request body:", req.body); // Log dữ liệu đầu vào
     // Kiểm tra xem req.body có chứa các trường cần thiết không
     const { items, totalItems, totalPrice, staff_id } = req.body;
 
@@ -47,14 +48,19 @@ const createOrder = async (req, res) => {
         .json({ message: "Items must be an array and cannot be empty." });
     }
 
-    const newOrder = await orderService.createOrder(req.body);
+    const newOrder = await orderService.createOrder({
+      items,
+      totalItems,
+      totalPrice,
+      staff_id,
+    });
     res
       .status(201)
       .json({ message: "Order created successfully", order: newOrder });
   } catch (err) {
-    console.error("Lỗi khi tạo đơn hàng:", err);
+    console.error("Error creating order:", err); // Log lỗi chi tiết
     res
-      .status(400)
+      .status(500)
       .json({ message: "Failed to create order", error: err.message });
   }
 };

@@ -11,14 +11,14 @@ const createStaffService = async (
 ) => {
   try {
     let result = await Staff.create({
-      Staff_name: Staff_name,
-      Staff_birthday: Staff_birthday,
-      Staff_sex: Staff_sex,
-      Staff_phone: Staff_phone,
-      Staff_email: Staff_email,
-      Staff_address: Staff_address,
-      Staff_status: Staff_status,
-      Staff_image: Staff_image,
+      Staff_name,
+      Staff_birthday,
+      Staff_sex,
+      Staff_phone,
+      Staff_email,
+      Staff_address,
+      Staff_status,
+      Staff_image,
     });
     return result;
   } catch (error) {
@@ -76,7 +76,83 @@ const getStaffService = async () => {
     throw new Error(error.message || "Error retrieving staff");
   }
 };
+// const getStaffById = async (id) => {
+//   try {
+//     const staff = await Staff.findById(id);
+//     return staff; // Trả về null nếu không tìm thấy
+//   } catch (error) {
+//     throw new Error(error.message || "Error fetching product");
+//   }
+// };
+const getStaffById = async (staffId) => {
+  try {
+    const staff = await Staff.findById(staffId); // Populate để lấy thông tin chi tiết category nếu cần
+    if (!staff) {
+      return {
+        status: "ERR",
+        message: "Staff not found",
+      };
+    }
+    return {
+      status: "OK",
+      message: "Staff found successfully",
+      data: staff,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error fetching staff");
+  }
+};
+const updateStaff = async (staffId, updatedFields) => {
+  try {
+    const staff = await Staff.findById(staffId);
+    if (!staff) {
+      return {
+        status: "ERR",
+        message: "Staff not found",
+      };
+    }
+
+    // Cập nhật thông tin sản phẩm
+    Object.keys(updatedFields).forEach((key) => {
+      product[key] = updatedFields[key];
+    });
+
+    const updatedProduct = await product.save();
+
+    return {
+      status: "OK",
+      message: "Product updated successfully",
+      data: updatedProduct,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error updating product");
+  }
+};
+
+const deleteStaff = async (productId) => {
+  try {
+    const staff = await Staff.findByIdAndDelete(staffId);
+    if (!staff) {
+      return {
+        status: "ERR",
+        message: "Staff not found",
+      };
+    }
+
+    // Trả về thông tin của sản phẩm đã xóa
+    return {
+      status: "OK",
+      message: "Staff deleted successfully",
+      data: staff,
+    };
+  } catch (error) {
+    throw new Error(error.message || "Error deleting staff");
+  }
+};
 module.exports = {
   createStaffService,
   getStaffService,
+  getStaffById,
+  updateStaff,
+  deleteStaff,
 };
