@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/v1/api/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/v1/product/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/v1/category/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/v1/warehouse/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/v1/staff/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/v1/payment/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/v1/cart/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/v1/order/(.*)",
+      "dest": "/server.js"
+    }
+  ]
+}

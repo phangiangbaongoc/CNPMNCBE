@@ -22,13 +22,23 @@ app.use(express.json()); // for json
 
 // Cấu hình CORS để chấp nhận các request từ frontend
 // app.use(cors());
-const corsOptions = {
-  origin: ["https://caonguyenfinal.vercel.app", "http://localhost:5173"], // Địa chỉ frontend
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Bao gồm cả phương thức OPTIONS
-  allowedHeaders: ["Content-Type", "Authorization"], // Header được phép
-  credentials: true, // Cho phép cookie hoặc thông tin xác thực
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: ["https://caonguyenfinal.vercel.app", "http://localhost:5173"], // Địa chỉ frontend
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Bao gồm cả phương thức OPTIONS
+//   allowedHeaders: ["Content-Type", "Authorization"], // Header được phép
+//   credentials: true, // Cho phép cookie hoặc thông tin xác thực
+// };
+// app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: ["https://caonguyenfinal.vercel.app", "http://localhost:5173"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Nếu bạn cần chia sẻ cookie với frontend
+    preflightContinue: false, // Chặn yêu cầu OPTIONS
+  })
+);
+
 configViewEngine(app);
 
 const webAPI = express.Router();
@@ -41,7 +51,7 @@ app.use("/v1/category", categoryRouter);
 app.use("/v1/warehouse", warehouseRouter);
 app.use("/v1/staff", staffRouter);
 app.use("/v1/payment", paymentRouter);
-app.use("/v1/cart", categoryRouter);
+app.use("/v1/cart", categoryRouter);gti add
 app.use("/v1/order", orderRouter);
 (async () => {
   try {
