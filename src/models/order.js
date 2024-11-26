@@ -125,7 +125,7 @@ const mongoose = require("mongoose");
 const itemSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product", // Refers to Product collection
+    ref: "product", // Refers to Product collection
     required: true,
   },
   quantity: {
@@ -147,11 +147,6 @@ const orderSchema = new mongoose.Schema({
   totalPrice: {
     type: Number,
     required: true,
-  },
-  staff_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "Staff",
   },
 });
 

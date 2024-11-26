@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const https = require("https");
-
+// var accessKey = "F8BBA842ECF85";
+// var secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
 const createPayment = async (paymentData) => {
   const {
     accessKey = "F8BBA842ECF85",
@@ -71,5 +72,56 @@ const createPayment = async (paymentData) => {
     req.end();
   });
 };
+// Hàm kiểm tra trạng thái giao dịch từ MoMo
+const getTransactionStatus = async (orderId) => {
+  try {
+    const partnerCode = "MOMO";
+    const requestId = `query_${Date.now()}`;
+    const rawSignature = `accessKey=F8BBA842ECF85&orderId=${orderId}&partnerCode=${partnerCode}&requestId=${requestId}`;
+    const signature = crypto
+      .createHmac("sha256", "K951B6PE1waDMi640xX08PD3vg6EkVlz")
+      .update(rawSignature)
+      .digest("hex");
 
-module.exports = { createPayment };
+    const requestBody = {
+      partnerCode,
+      accessKey: "F8BBA842ECF85",
+      requestId,
+      orderId,
+      signature,
+    };
+
+    const response = await axios.post(
+      "https://test-payment.momo.vn/v2/gateway/api/query",
+      requestBody,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    return response.data; // Trả về dữ liệu từ MoMo
+  } catch (error) {
+    console.error("Error fetching transaction status:", error.message);
+    throw new Error("Unable to fetch transaction status");
+  }
+};
+
+// Hàm lấy trạng thái giao dịch từ database (nếu không gọi MoMo)
+const getLocalTransactionStatus = async (orderId) => {
+  const transaction = await Payment.findOne({ orderId });
+  if (!transaction) {
+    throw new Error("Transaction not found");
+  }
+  return {
+    orderId: transaction.orderId,
+    status: transaction.result.resultCode === 0 ? "SUCCESS" : "FAILED",
+    amount: transaction.amount,
+    message: transaction.result.message || "Status retrieved",
+  };
+};
+
+module.exports = {
+  createPayment,
+  getTransactionStatus,
+  getLocalTransactionStatus,
+};

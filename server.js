@@ -21,26 +21,14 @@ app.use(express.json()); // for json
 // app.use(express.urlencoded({ extended: true })); // for form data
 
 // Cấu hình CORS để chấp nhận các request từ frontend
-app.use(cors());
-// const corsOptions = {
-//   origin: [
-//     "http://localhost:5173/",
-//     "https://cnpmncbe-46ny2dnqp-ngocs-projects-c569bb48.vercel.app/",
-//   ], // Địa chỉ frontend
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Bao gồm cả phương thức OPTIONS
-//   allowedHeaders: ["Content-Type", "Authorization"], // Header được phép
-//   credentials: true, // Cho phép cookie hoặc thông tin xác thực
-// };
-// const corsOptions = {
-//   origin: "*", // Chấp nhận mọi request (dùng tạm để debug)
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
-// app.use(cors(corsOptions));
-
-// app.options("*", cors(corsOptions));
-//config template engine
+// app.use(cors());
+const corsOptions = {
+  origin: ["https://caonguyenfinal.vercel.app", "http://localhost:5173"], // Địa chỉ frontend
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Bao gồm cả phương thức OPTIONS
+  allowedHeaders: ["Content-Type", "Authorization"], // Header được phép
+  credentials: true, // Cho phép cookie hoặc thông tin xác thực
+};
+app.use(cors(corsOptions));
 configViewEngine(app);
 
 const webAPI = express.Router();
